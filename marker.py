@@ -1,4 +1,6 @@
 from docx import Document
+import os
+import sys
 import pandas as pd
 
 MARKED = ["X", "x"]
@@ -6,23 +8,40 @@ TOTAL = 15
 PENALTY = 0.5
 
 
-def compare_solution_with_student(solution, student_answer) -> list:
-    """
+def mark_student_papers(solution_table, folder_path):
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".docx"):
+            if filename.startswith('~$'):
+                continue
+            student_file = os.path.join(folder_path, filename)
+            print(student_file)
+            student_test = load_as_table(student_file)
+            student_result = compare_solution_with_student(solution_table, student_test)
+            print_to_file(student_result, filename)
 
+
+# TODO Make it pretty
+def print_to_file(student_result, filename):
+    with open(f"results.txt", 'a+') as f:
+        f.write(txt_format(student_result, filename))
+
+
+def compare_solution_with_student(solution, student_test) -> list:
+    """
     :post-condition: If student has more errors exceeding the total_score then it just is 0
     :param solution:
-    :param student_answer:
+    :param student_test:
     :return:
     """
     solution = pd.DataFrame(solution)
-    student_answer = pd.DataFrame(student_answer)
+    student_test = pd.DataFrame(student_test)
 
     solution['num_of_correct'] = solution.apply(lambda row: (row == "X").sum(), axis=1)
-    student_answer['num_of_correct'] = student_answer.apply(lambda row: (row == "X").sum(), axis=1)
+    student_test['num_of_correct'] = student_test.apply(lambda row: (row == "X").sum(), axis=1)
     student_total_score = 0
 
     column_labels = ["Question", "A", "B", "C", "D", "E", "F"]
-    if solution.shape != student_answer.shape:
+    if solution.shape != student_test.shape:
         raise TypeError("Ruh roh - Tables have different dimensions! Please check!")
     rows_sum = []
     # Ignores the first two rows and last column
@@ -31,19 +50,12 @@ def compare_solution_with_student(solution, student_answer) -> list:
         max_num_correct = solution.iloc[r, -1]
         errors = []
         correct = []
-        for c in range(1, len(column_labels) - 1):
+        for c in range(1, len(column_labels)):
             # If solution cell is not equal to student cell
-            solution_cell, student_cell = solution.iloc[r, c], student_answer.iloc[r, c]
+            solution_cell, student_cell = solution.iloc[r, c], student_test.iloc[r, c]
             student_marked += 1 if student_cell in MARKED else 0
             if solution_cell != student_cell:
                 errors.append(column_labels[c])
-                # errors.append({
-                #     "Q": r - 1,
-                #     "Col": column_labels[c],
-                #     # "Solution": solution.iloc[r,c],
-                #     "Student": student_answer.iloc[r,c],
-                #     "MaxCorrectAnswers": max_num_correct,
-                # })
             elif solution_cell == student_cell and student_cell:  # not empty string
                 correct.append(column_labels[c])
         # Student is penalized for incorrect answer by a factor 1 / max_num_correct
@@ -62,16 +74,31 @@ def compare_solution_with_student(solution, student_answer) -> list:
     return rows_sum
 
 
-def pretty_print(errors: list):
-    print(errors[-1]["percent"])
-    for error in errors:
-        print(error)
-
-
 # TODO Develop a filter function that filters by submission time, goes into each folder and extracts data and renaming
+def txt_format(results, filename):
+    # Extracting total score and percentage
+    total_score = results[-1]['total']
+    total_percentage = results[-1]['percent'] * 100  # Convert to percentage
 
-def print_to_file:
-    pass
+    # Creating the report string
+    report = f"### {filename}t\n\n"
+    report += f"**Total Score:** {total_score:.2f}\n"
+    report += f"**Percentage:** {total_percentage:.2f}%\n\n"
+    report += "| Question | Score | Incorrect Answers       | Correct Answers | Max Correct Answers |\n"
+    report += "|----------|-------|------------------------|-----------------|---------------------|\n"
+
+    # Adding each question's result to the report
+    for item in results[:-1]:  # Exclude the last item (total)
+        question = item['Q']
+        score = item['Score']
+        incorrect = ', '.join(item['Incorrect']) if item['Incorrect'] else 'None'
+        correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
+        max_correct = item['MaxCorrectAnswers']
+
+        report += f"| {question:<8} | {score:<5} | {incorrect:<22} | {correct:<15} | {max_correct:<19} |\n"
+
+    return report
+
 
 def load_as_table(filepath: str) -> list:
     doc = Document(filepath)
@@ -83,14 +110,18 @@ def load_as_table(filepath: str) -> list:
 
 
 def main():
-    doc = ("/Users/Matthew/Downloads/Quiz1 Submission Sep 23, 2024/1804907-523120 - A01383660_Marc Angelo_Arnaldo_Feb "
-           "16, 2024 1027 AM_COMP 2417-Quiz1-Answersheet.docx")
-    doc2 = (
-        '/Users/Matthew/Downloads/Quiz1 Submission Sep 23, 2024/1692876-523120 - A01349998_Irene_Cheung_Feb 16, 2024 1027 AM_COMP 2417-Quiz1-Answersheet.docx')
-    table_1 = load_as_table(doc)
-    table_2 = load_as_table(doc2)
-    summary = compare_solution_with_student(table_1, table_2)
-    pretty_print(summary)
+    if len(sys.argv) != 3:
+        print("Usage: python mark_papers.py <solution_file> <folder_path>")
+        sys.exit(1)
+
+    key = load_as_table(sys.argv[1])
+    folder_path = sys.argv[2]
+
+    # key = '/Users/Matthew/Downloads/Quiz1 Submission Sep 23, 2024/file1.docx'
+    # folder_path = '/Users/Matthew/Downloads/Quiz1 Submission Sep 23, 2024'
+
+    mark_student_papers(key, folder_path)
+    # print_to_file(summary)
 
 
 if __name__ == '__main__':
