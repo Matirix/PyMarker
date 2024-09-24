@@ -20,7 +20,6 @@ def mark_student_papers(solution_table, folder_path):
             print_to_file(student_result, filename)
 
 
-# TODO Make it pretty
 def print_to_file(student_result, filename):
     with open(f"results.txt", 'a+') as f:
         f.write(txt_format(student_result, filename))
@@ -90,7 +89,7 @@ def txt_format(results, filename):
     # Adding each question's result to the report
     for item in results[:-1]:  # Exclude the last item (total)
         question = item['Q']
-        score = item['Score']
+        score = round(float(item['Score']),2)
         incorrect = ', '.join(item['Incorrect']) if item['Incorrect'] else 'None'
         correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
         max_correct = item['MaxCorrectAnswers']
@@ -98,8 +97,6 @@ def txt_format(results, filename):
         report += f"| {question:<8} | {score:<5} | {incorrect:<22} | {correct:<15} | {max_correct:<19} |\n"
 
     return report
-
-
 def load_as_table(filepath: str) -> list:
     doc = Document(filepath)
     table = doc.tables[0]
