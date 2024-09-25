@@ -43,8 +43,8 @@ def delete_old_files(latest_file, all_files):
 
 if __name__ == "__main__":
     # Example usage
-    folder_path = '/path/to/your/folder'  # Replace with the folder path you want to scan
-    pattern = r'^\d{6}-\d{6}'  # Example pattern for files with 12-digit start
+    folder_path = '/Users/Matthew/Downloads/Quiz1 Sep 23 2024 2'  # Replace with the folder path you want to scan
+    pattern = r'.*A0\d{10}.*'  # Example pattern for files with 12-digit start
     latest_file, filtered_files = get_latest_filtered_file(folder_path, pattern)
 
     if latest_file:

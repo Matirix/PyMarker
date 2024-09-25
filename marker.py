@@ -8,8 +8,14 @@ TOTAL = 15
 PENALTY = 0.5
 
 
-def mark_student_papers(solution_table, folder_path):
+def delete_answer_sheet_files(student_file):
+    os.remove(student_file)
+
+
+def mark_student_papers(solution_table, folder_path, delete_keyword=""):
     for filename in os.listdir(folder_path):
+        if delete_keyword and delete_keyword in filename:
+            delete_answer_sheet_files(delete_keyword)
         if filename.endswith(".docx"):
             if filename.startswith('~$'):
                 continue
@@ -89,7 +95,7 @@ def txt_format(results, filename):
     # Adding each question's result to the report
     for item in results[:-1]:  # Exclude the last item (total)
         question = item['Q']
-        score = round(float(item['Score']),2)
+        score = round(float(item['Score']), 2)
         incorrect = ', '.join(item['Incorrect']) if item['Incorrect'] else 'None'
         correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
         max_correct = item['MaxCorrectAnswers']
@@ -97,6 +103,8 @@ def txt_format(results, filename):
         report += f"| {question:<8} | {score:<5} | {incorrect:<22} | {correct:<15} | {max_correct:<19} |\n"
 
     return report
+
+
 def load_as_table(filepath: str) -> list:
     doc = Document(filepath)
     table = doc.tables[0]
