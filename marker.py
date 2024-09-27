@@ -2,6 +2,9 @@ from docx import Document
 import os
 import sys
 import pandas as pd
+import Mark
+import marker
+from Paper import Paper
 
 MARKED = ["X", "x"]
 TOTAL = 15
@@ -25,7 +28,6 @@ def mark_student_papers(solution_table, folder_path, delete_keyword=""):
             student_result = compare_solution_with_student(solution_table, student_test)
             print_to_file(student_result, filename)
 
-
 def print_to_file(student_result, filename):
     with open(f"results.txt", 'a+') as f:
         f.write(txt_format(student_result, filename))
@@ -41,11 +43,11 @@ def compare_solution_with_student(solution, student_test) -> list:
     solution = pd.DataFrame(solution)
     student_test = pd.DataFrame(student_test)
 
+    column_labels = (solution.values[:-1][0])
     solution['num_of_correct'] = solution.apply(lambda row: (row == "X").sum(), axis=1)
     student_test['num_of_correct'] = student_test.apply(lambda row: (row == "X").sum(), axis=1)
     student_total_score = 0
 
-    column_labels = ["Question", "A", "B", "C", "D", "E", "F"]
     if solution.shape != student_test.shape:
         raise TypeError("Ruh roh - Tables have different dimensions! Please check!")
     rows_sum = []
@@ -58,6 +60,7 @@ def compare_solution_with_student(solution, student_test) -> list:
         for c in range(1, len(column_labels)):
             # If solution cell is not equal to student cell
             solution_cell, student_cell = solution.iloc[r, c], student_test.iloc[r, c]
+            # TODO Not really needed as we can do sp.iloc as well
             student_marked += 1 if student_cell in MARKED else 0
             if solution_cell != student_cell:
                 errors.append(column_labels[c])
@@ -115,18 +118,22 @@ def load_as_table(filepath: str) -> list:
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python mark_papers.py <solution_file> <folder_path>")
-        sys.exit(1)
+    # if len(sys.argv) != 3:
+    #     print("Usage: python mark_papers.py <solution_file> <folder_path>")
+    #     sys.exit(1)
+    #
+    # key = load_as_table(sys.argv[1])
+    # folder_path = sys.argv[2]
 
-    key = load_as_table(sys.argv[1])
-    folder_path = sys.argv[2]
+    key = '/Users/Matthew/Downloads/Quiz1 Sep 23 2024 3/1692876-523120 - A01349998_Irene_Cheung_Feb 16, 2024 1027 AM_COMP 2417-Quiz1-Answersheet.docx'
+    folder_path = '/Users/Matthew/Downloads/Quiz1 Sep 23 2024 3'
 
-    # key = '/Users/Matthew/Downloads/Quiz1 Submission Sep 23, 2024/file1.docx'
-    # folder_path = '/Users/Matthew/Downloads/Quiz1 Submission Sep 23, 2024'
-
-    mark_student_papers(key, folder_path)
+    # mark_student_papers(load_as_table(key), folder_path)
     # print_to_file(summary)
+    paper_1 = Paper(key)
+    paper_2 = Paper(key)
+    mark = Mark.Marker(paper_1, paper_2)
+    mark.compare_solution_with_student()
 
 
 if __name__ == '__main__':
