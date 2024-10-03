@@ -31,29 +31,28 @@ class Marker:
         :param begin_from_row: Sets the beginning of the row to skip headers
         :return:
         """
-        student_total_score = 0
-        sum_of_rows = []
-
         for r in range(begin_from_row, self.solution.table.shape[0]):
-            max_num_correct = self.solution.table.iloc[r, -1]
-            student_marked = self.student_paper.table.iloc[r, -1]
+            max_num_correct = self.solution.get_row_marked(row=r)
+            student_marked = self.student_paper.get_row_marked(row=r)
             errors = []
             correct = []
             for c in range(1, len(self.solution.get_column_labels())):
-                solution_cell, student_cell = self.solution.table.iloc[r, c], self.student_paper.table.iloc[r, c]
+                solution_cell, student_cell = self.solution.get_cell(r,c), self.student_paper.get_cell(r,c)
                 if solution_cell != student_cell:
                     errors.append(self.solution.get_column_labels()[c])
                 elif solution_cell == student_cell and student_cell:  # not empty string
                     correct.append(self.solution.get_column_labels()[c])
             score = self.get_row_score(correct, max_num_correct, student_marked)
-            student_total_score += (score if score > 0 else 0)
-            sum_of_rows.append({
+            self.student_paper.total_score += (score if score > 0 else 0)
+            self.student_paper.graded_rows.append({
                 "Q": r - 1,
                 "Score": f"{score if score > 0 else 0}",
                 "Incorrect": errors,
                 "Correct": correct,
                 "MaxCorrectAnswers": max_num_correct,
             })
-        sum_of_rows.append({"total": round(student_total_score, 2), "percent": round(student_total_score / self.TOTAL, 2)})
-        print(sum_of_rows)
+        self.student_paper.graded_rows.append({"total": round(self.student_paper.total_score, 2), "percent": round(self.student_paper.total_score / self.TOTAL, 2)})
+        print(self.student_paper.graded_rows)
+
+
 
