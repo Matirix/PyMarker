@@ -32,8 +32,8 @@ def delete_answer_sheet_files(student_file):
     os.remove(student_file)
 
 
-def print_to_file(student_result, filename):
-    with open(f"results.txt", 'a+') as f:
+def print_to_file(student_result, folder_path, filename):
+    with open(f"{folder_path}/results.txt", 'a+') as f:
         f.write(txt_format(student_result, filename))
 
 
@@ -49,17 +49,15 @@ def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
             student_file = os.path.join(folder_path, filename)
             student_test = Paper(student_file)
             marker.set_student_paper(student_test)
-            student_result = marker.compare_solution_with_student(begin_from_row=1)
+            student_result = marker.compare_solution_with_student()
             print(f"Successfully Marked{filename} w/ {student_result[-1]}")
-            # print_to_file(student_result, filename)
+            print_to_file(student_result, folder_path, filename)
 
 
 def main():
-    # Make a Marker Class
-    key = ('/Users/Matthew/Downloads/Quiz1 Oct 3 2024/150384-562696 - A00744340_Annyn_Matheson_Oct 2, 2024 130 PM_COMP '
-           '2417-Quiz1-Annyn.docx')
+    key2 = '/Users/Matthew/Downloads/AnswerKey.docx'
     folder_path = '/Users/Matthew/Downloads/Quiz1 Oct 3 2024'
-    mark_student_papers(key, folder_path)
+    mark_student_papers(key2, folder_path)
 
 
 if __name__ == '__main__':
