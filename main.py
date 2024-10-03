@@ -59,6 +59,13 @@ def main():
     folder_path = '/Users/Matthew/Downloads/Quiz1 Oct 3 2024'
     mark_student_papers(key2, folder_path)
 
+    #     # if len(sys.argv) != 3:
+    #     #     print("Usage: python mark_papers.py <solution_file> <folder_path>")
+    #     #     sys.exit(1)
+    #     #
+    #     # key = load_as_table(sys.argv[1])
+    #     # folder_path = sys.argv[2]
+
 
 if __name__ == '__main__':
     main()
