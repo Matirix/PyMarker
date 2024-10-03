@@ -1,10 +1,7 @@
 from docx import Document
 import os
-import sys
 import pandas as pd
-import Mark
-import marker
-from Paper import Paper
+
 
 MARKED = ["X", "x"]
 TOTAL = 15
@@ -27,6 +24,7 @@ def mark_student_papers(solution_table, folder_path, delete_keyword=""):
             student_test = load_as_table(student_file)
             student_result = compare_solution_with_student(solution_table, student_test)
             print_to_file(student_result, filename)
+
 
 def print_to_file(student_result, filename):
     with open(f"results.txt", 'a+') as f:
@@ -117,24 +115,23 @@ def load_as_table(filepath: str) -> list:
     return translated_table
 
 
-def main():
-    # if len(sys.argv) != 3:
-    #     print("Usage: python mark_papers.py <solution_file> <folder_path>")
-    #     sys.exit(1)
-    #
-    # key = load_as_table(sys.argv[1])
-    # folder_path = sys.argv[2]
-
-    key = '/Users/Matthew/Downloads/Quiz1 Sep 23 2024 3/1692876-523120 - A01349998_Irene_Cheung_Feb 16, 2024 1027 AM_COMP 2417-Quiz1-Answersheet.docx'
-    folder_path = '/Users/Matthew/Downloads/Quiz1 Sep 23 2024 3'
-
-    # mark_student_papers(load_as_table(key), folder_path)
-    # print_to_file(summary)
-    paper_1 = Paper(key)
-    paper_2 = Paper(key)
-    mark = Mark.Marker(paper_1, paper_2)
-    mark.compare_solution_with_student()
-
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     # if len(sys.argv) != 3:
+#     #     print("Usage: python mark_papers.py <solution_file> <folder_path>")
+#     #     sys.exit(1)
+#     #
+#     # key = load_as_table(sys.argv[1])
+#     # folder_path = sys.argv[2]
+#
+#     key = '/Users/Matthew/Downloads/Quiz1 Sep 23 2024 3/1692876-523120 - A01349998_Irene_Cheung_Feb 16, 2024 1027 AM_COMP 2417-Quiz1-Answersheet.docx'
+#     folder_path = '/Users/Matthew/Downloads/Quiz1 Sep 23 2024 3'
+#
+#     # mark_student_papers(load_as_table(key), folder_path)
+#     # print_to_file(summary)
+#     # paper_1 = Paper(key)
+#     # mark = Mark.Marker(paper_1)
+#     # mark.compare_solution_with_student()
+#
+#
+# if __name__ == '__main__':
+#     main()

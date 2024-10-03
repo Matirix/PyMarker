@@ -1,7 +1,6 @@
 from docx import Document
 import os
 import sys
-import pandas as pd
 import Paper
 
 
@@ -10,9 +9,24 @@ class Marker:
     TOTAL = 15
     PENALTY = 0.5
 
-    def __init__(self, student_paper: Paper, solution: Paper, ):
-        self.student_paper = student_paper
+    def __init__(self, solution: Paper, ):
+        self.student_paper = None
         self.solution = solution
+    def set_student_paper(self, student_paper: Paper):
+        self.student_paper = student_paper
+
+    # def mark_student_papers(self, solution_file_path, folder_path, delete_keyword=""):
+    #     test_key = Paper(solution_file_path)
+    #     for filename in os.listdir(folder_path):
+    #         if delete_keyword and delete_keyword in filename:
+    #             self.delete_answer_sheet_files(delete_keyword)
+    #         if filename.endswith(".docx"):
+    #             if filename.startswith('~$'):
+    #                 continue
+    #             student_file = os.path.join(folder_path, filename)
+    #             student_test = Paper(student_file)
+    #             student_result = self.compare_solution_with_student(test_key, student_test)
+    #             self.print_to_file(student_result, filename)
 
     def get_row_score(self, correct: list, max_num_correct: int, student_marked):
         """
@@ -52,7 +66,36 @@ class Marker:
                 "MaxCorrectAnswers": max_num_correct,
             })
         self.student_paper.graded_rows.append({"total": round(self.student_paper.total_score, 2), "percent": round(self.student_paper.total_score / self.TOTAL, 2)})
-        print(self.student_paper.graded_rows)
+        return self.student_paper.graded_rows
+    # def delete_answer_sheet_files(self, student_file):
+    #     os.remove(student_file)
+    #
+    # def print_to_file(self, student_result, filename):
+    #     with open(f"results.txt", 'a+') as f:
+    #         f.write(self.txt_format(student_result, filename))
 
+    def txt_format(self, results, filename):
+        # Extracting total score and percentage
+        total_score = results[-1]['total']
+        total_percentage = results[-1]['percent'] * 100  # Convert to percentage
+
+        # Creating the report string
+        report = f"### {filename}t\n\n"
+        report += f"**Total Score:** {total_score:.2f}\n"
+        report += f"**Percentage:** {total_percentage:.2f}%\n\n"
+        report += "| Question | Score | Incorrect Answers       | Correct Answers | Max Correct Answers |\n"
+        report += "|----------|-------|------------------------|-----------------|---------------------|\n"
+
+        # Adding each question's result to the report
+        for item in results[:-1]:  # Exclude the last item (total)
+            question = item['Q']
+            score = round(float(item['Score']), 2)
+            incorrect = ', '.join(item['Incorrect']) if item['Incorrect'] else 'None'
+            correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
+            max_correct = item['MaxCorrectAnswers']
+
+            report += f"| {question:<8} | {score:<5} | {incorrect:<22} | {correct:<15} | {max_correct:<19} |\n"
+
+        return report
 
 
