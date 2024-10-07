@@ -1,6 +1,9 @@
+import sys
+
 from Paper import Paper
 import os
 import Mark
+from marker import load_as_table
 
 
 def txt_format(results, filename):
@@ -55,16 +58,13 @@ def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
 
 
 def main():
-    key2 = '/Users/Matthew/Downloads/AnswerKey.docx'
-    folder_path = '/Users/Matthew/Downloads/Quiz1 Oct 3 2024'
-    mark_student_papers(key2, folder_path)
+    if len(sys.argv) != 3:
+        print("Usage: python mark_papers.py <solution_file> <folder_path>")
+        sys.exit(1)
 
-    #     # if len(sys.argv) != 3:
-    #     #     print("Usage: python mark_papers.py <solution_file> <folder_path>")
-    #     #     sys.exit(1)
-    #     #
-    #     # key = load_as_table(sys.argv[1])
-    #     # folder_path = sys.argv[2]
+    key = load_as_table(sys.argv[1])
+    folder_path = sys.argv[2]
+    mark_student_papers(key, folder_path)
 
 
 if __name__ == '__main__':
