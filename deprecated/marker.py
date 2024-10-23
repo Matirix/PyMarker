@@ -57,11 +57,14 @@ def compare_solution_with_student(solution, student_test) -> list:
         max_num_correct = solution.iloc[r, -1]
         errors = []
         correct = []
+        solution_key = []
         for c in range(1, len(column_labels)):
             # If solution cell is not equal to student cell
             solution_cell, student_cell = solution.iloc[r, c], student_test.iloc[r, c]
             # TODO Not really needed as we can do sp.iloc as well
             student_marked += 1 if student_cell in MARKED else 0
+            if solution_cell == 'X':
+                solution_key.append(column_labels[c])
             if solution_cell != student_cell:
                 errors.append(column_labels[c])
             elif solution_cell == student_cell and student_cell:  # not empty string
@@ -75,7 +78,8 @@ def compare_solution_with_student(solution, student_test) -> list:
             "Q": r - 1,
             "Score": f"{score if score > 0 else 0}",
             "Incorrect": errors,
-            "Correct": correct,
+            "Solution": solution_key,
+            # "Correct": correct,
             "MaxCorrectAnswers": max_num_correct,
         })
     rows_sum.append({"total": round(student_total_score, 2), "percent": round(student_total_score / TOTAL, 2)})
@@ -92,7 +96,7 @@ def txt_format(results, filename):
     report = f"### {filename}t\n\n"
     report += f"**Total Score:** {total_score:.2f}\n"
     report += f"**Percentage:** {total_percentage:.2f}%\n\n"
-    report += "| Question | Score | Incorrect Answers       | Correct Answers | Max Correct Answers |\n"
+    report += "| Question | Score | Incorrect Answers       | Solution Key | Max Correct Answers |\n"
     report += "|----------|-------|------------------------|-----------------|---------------------|\n"
 
     # Adding each question's result to the report
@@ -100,10 +104,10 @@ def txt_format(results, filename):
         question = item['Q']
         score = round(float(item['Score']), 2)
         incorrect = ', '.join(item['Incorrect']) if item['Incorrect'] else 'None'
-        correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
+        solution = ', '.join(item['Solution']) if item['Solution'] else 'None'
         max_correct = item['MaxCorrectAnswers']
 
-        report += f"| {question:<8} | {score:<5} | {incorrect:<22} | {correct:<15} | {max_correct:<19} |\n"
+        report += f"| {question:<8} | {score:<5} | {incorrect:<22} | {solution:<15} | {max_correct:<19} |\n"
 
     return report
 

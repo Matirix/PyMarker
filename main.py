@@ -3,7 +3,6 @@ import sys
 from Paper import Paper
 import os
 import Mark
-from marker import load_as_table
 
 
 def txt_format(results, filename):
@@ -15,18 +14,20 @@ def txt_format(results, filename):
     report = f"### {filename}t\n\n"
     report += f"**Total Score:** {total_score:.2f}\n"
     report += f"**Percentage:** {total_percentage:.2f}%\n\n"
-    report += "| Question | Score | Incorrect Answers       | Correct Answers | Max Correct Answers |\n"
-    report += "|----------|-------|------------------------|-----------------|---------------------|\n"
+    report += "| Question | Score |    Student     |   Solution Key   | Incorrect Ans   |\n"
+    report += "|----------|-------|----------------|------------------|-----------------|\n"
 
     # Adding each question's result to the report
     for item in results[:-1]:  # Exclude the last item (total)
         question = item['Q']
         score = round(float(item['Score']), 2)
         incorrect = ', '.join(item['Incorrect']) if item['Incorrect'] else 'None'
-        correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
-        max_correct = item['MaxCorrectAnswers']
+        # correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
+        student = ', '.join(item['Student'] if item['Student'] else 'None')
+        solution = ', '.join(item['Solution']) if item['Solution'] else 'None'
+        # max_correct = item['MaxCorrectAnswers']
 
-        report += f"| {question:<8} | {score:<5} | {incorrect:<22} | {correct:<15} | {max_correct:<19} |\n"
+        report += f"| {question:<8} | {score:<5} | {student:<15}| {solution:<15} | {incorrect:<15} |\n"
 
     return report
 
@@ -62,7 +63,7 @@ def main():
         print("Usage: python mark_papers.py <solution_file> <folder_path>")
         sys.exit(1)
 
-    key = load_as_table(sys.argv[1])
+    key = sys.argv[1]
     folder_path = sys.argv[2]
     mark_student_papers(key, folder_path)
 
