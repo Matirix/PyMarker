@@ -15,7 +15,7 @@ def txt_format(results, filename):
     report += f"**Total Score:** {total_score:.2f}\n"
     report += f"**Percentage:** {total_percentage:.2f}%\n\n"
     report += "| Question | Score |    Student     |   Solution Key   | Incorrect Ans   |\n"
-    report += "|----------|-------|----------------|------------------|-----------------|\n"
+    report += "|----------|-------|----------------|-----------------|-----------------|\n"
 
     # Adding each question's result to the report
     for item in results[:-1]:  # Exclude the last item (total)

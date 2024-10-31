@@ -46,10 +46,10 @@ class Marker:
                     sol_key.append(self.solution.get_column_labels()[c])
                 if student_cell:
                     stud_ans.append(self.solution.get_column_labels()[c])
-                if solution_cell != student_cell:
-                    errors.append(self.solution.get_column_labels()[c])
-                elif solution_cell and student_cell:  # not empty string
+                if solution_cell and student_cell:  # not empty string
                     correct.append(self.solution.get_column_labels()[c])
+                elif solution_cell != student_cell:
+                    errors.append(self.solution.get_column_labels()[c])
             score = self.get_row_score(correct, max_num_correct, student_marked)
             self.student_paper.total_score += (score if score > 0 else 0)
             self.student_paper.graded_rows.append({
