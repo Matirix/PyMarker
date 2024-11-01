@@ -1,5 +1,5 @@
 import sys
-
+import argparse
 from Paper import Paper
 import os
 import Mark
@@ -61,15 +61,25 @@ def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
             print_to_file(student_result, folder_path, filename)
 
 
+def mark_single_paper(solution_file_path, student_file_path):
+    marker = Mark.Marker(Paper(solution_file_path))
+    student_file = Paper(student_file_path)
+    marker.set_student_paper(student_file)
+    student_result = marker.compare_solution_with_student()
+    print(txt_format(student_result, student_file_path))
+
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python mark_papers.py <solution_file> <folder_path>")
-        sys.exit(1)
-
-    key = sys.argv[1]
-    folder_path = sys.argv[2]
-    mark_student_papers(key, folder_path)
+    parser = argparse.ArgumentParser(description="Mark student papers based on a solution file.")
+    parser.add_argument("solution_file", help="Path to the solution file")
+    parser.add_argument("student_path", help="Path containing student paper(s)")
+    parser.add_argument("-s", "--single", action="store_true", help="Mark Single Student")
+    args = parser.parse_args()
+    if args.single:
+        print("Marking Single Paper")
+        mark_single_paper(args.solution_file, args.student_path)
+    else:
+        mark_student_papers(args.solution_file, args.student_path)
 
 
 if __name__ == '__main__':
