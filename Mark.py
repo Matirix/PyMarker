@@ -16,16 +16,35 @@ class Marker:
     def set_student_paper(self, student_paper: Paper):
         self.student_paper = student_paper
 
-    def get_row_score(self, correct: list, max_num_correct: int, student_marked):
+    def get_row_score(self, correct: list, max_num_correct: int, student_marked, no_penalty = True):
         """
         Calculates the Row score taking in the penalty, marked answers and correct marks.
+
         :param correct: Number of Correct student answers
         :param max_num_correct: Number of Correct solutions
         :param student_marked: Number of student marked
+        :param no_penalty: Boolean flag to avoid penalizing students for guessing on 2-3 correct solutions.
         :return:
         """
         score = (len(correct) / max_num_correct) - (self.PENALTY * (student_marked - len(correct)) / max_num_correct)
-        return score
+        score = round(score, 2)
+        if score == 0.17 and no_penalty:
+            score = 0.33
+        elif score == .25 and no_penalty:
+            score = .5
+        return score if score > 0 else 0
+
+    def cell_match(self, student_cell, solution_cell):
+        """
+
+        :param student_cell: An X or an x or non-empty
+        :param solution_cell:  An x or an X or non-empty
+        :return:
+        """
+        if student_cell.lower() == 'x' and solution_cell.lower() == 'x':
+            return True
+        else:
+            return student_cell and solution_cell
 
     def compare_solution_with_student(self, begin_from_row=2):
         """
@@ -44,17 +63,17 @@ class Marker:
                 solution_cell, student_cell = self.solution.get_cell(r, c), self.student_paper.get_cell(r, c)
                 if solution_cell:
                     sol_key.append(self.solution.get_column_labels()[c])
-                if student_cell:
+                if student_cell.lower() == 'x':
                     stud_ans.append(self.solution.get_column_labels()[c])
-                if solution_cell and student_cell:  # not empty string
+                if self.cell_match(student_cell, solution_cell):  # not empty string
                     correct.append(self.solution.get_column_labels()[c])
                 elif solution_cell != student_cell:
                     errors.append(self.solution.get_column_labels()[c])
             score = self.get_row_score(correct, max_num_correct, student_marked)
-            self.student_paper.total_score += (score if score > 0 else 0)
+            self.student_paper.total_score += score
             self.student_paper.graded_rows.append({
                 "Q": r - 1,
-                "Score": f"{score if score > 0 else 0}",
+                "Score": f"{score}",
                 "Incorrect": errors,
                 "Student": stud_ans,
                 "Solution": sol_key,
