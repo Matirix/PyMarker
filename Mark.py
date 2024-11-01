@@ -6,11 +6,30 @@ class Marker:
     TOTAL = 15
     PENALTY = 0.5
 
-    def __init__(self, solution: Paper, ):
-        self.student_paper = None
+    def __init__(self, solution: Paper, student_paper: Paper):
+        """
+        Default constructor used to mark student papers
+        :param solution: Answer Key
+        :param student_paper: Student Paper
+        """
+        self.student_paper = student_paper
         self.solution = solution
 
+    @classmethod
+    def with_only_solution(cls, solution: Paper):
+        """
+        Used when marking multiple papers to avoid making multiple Marker Objects for multiple Papers
+        :param solution: The Answer Key
+        :return: Marker Object
+        """
+        return cls(solution, None)
+
     def set_student_paper(self, student_paper: Paper):
+        """
+        Sets the student paper
+        :param student_paper: Paper Object
+        :return: None
+        """
         self.student_paper = student_paper
 
     def get_row_score(self, correct: list, max_num_correct: int, student_marked, no_penalty=True):
@@ -33,7 +52,6 @@ class Marker:
 
     def cell_match(self, student_cell, solution_cell):
         """
-
         :param student_cell: An X or an x or non-empty
         :param solution_cell:  An x or an X or non-empty
         :return:

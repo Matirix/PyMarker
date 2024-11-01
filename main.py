@@ -1,11 +1,16 @@
 import argparse
 from Paper import Paper
 import os
-import Mark
-
+from Mark import Marker
 
 
 def txt_format(results, filename):
+    """
+    Formats the text
+    :param results: Students Results
+    :param filename: Name of the file
+    :return:
+    """
     # Extracting total score and percentage
     total_score = results[-1]['total']
     total_percentage = results[-1]['percent'] * 100  # Convert to percentage
@@ -33,17 +38,29 @@ def txt_format(results, filename):
 
 
 def delete_answer_sheet_files(student_file):
+    """
+    Removes answer sheets that are submitted
+    :param student_file: docx file
+    :return: None
+    """
     os.remove(student_file)
 
 
 def print_to_file(student_result, folder_path, filename):
+    """
+    Prints to File
+    :param student_result: Paper Object
+    :param folder_path: folder containing student files
+    :param filename: Name Of File
+    :return: None
+    """
     with open(f"{folder_path}/results.txt", 'a+') as f:
         f.write(txt_format(student_result, filename))
 
 
 def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
     test_key = Paper(solution_file_path)
-    marker = Mark.Marker(test_key)
+    marker = Marker.with_only_solution(test_key)
     for filename in os.listdir(folder_path):
         if delete_keyword and delete_keyword in filename:
             delete_answer_sheet_files(delete_keyword)
@@ -62,9 +79,7 @@ def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
 
 
 def mark_single_paper(solution_file_path, student_file_path):
-    marker = Mark.Marker(Paper(solution_file_path))
-    student_file = Paper(student_file_path)
-    marker.set_student_paper(student_file)
+    marker = Marker(Paper(solution_file_path), Paper(student_file_path))
     student_result = marker.compare_solution_with_student()
     print(txt_format(student_result, student_file_path))
 
