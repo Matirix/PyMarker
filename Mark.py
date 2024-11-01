@@ -1,6 +1,3 @@
-from docx import Document
-import os
-import sys
 import Paper
 
 
@@ -16,7 +13,7 @@ class Marker:
     def set_student_paper(self, student_paper: Paper):
         self.student_paper = student_paper
 
-    def get_row_score(self, correct: list, max_num_correct: int, student_marked, no_penalty = True):
+    def get_row_score(self, correct: list, max_num_correct: int, student_marked, no_penalty=True):
         """
         Calculates the Row score taking in the penalty, marked answers and correct marks.
 
@@ -83,4 +80,3 @@ class Marker:
         self.student_paper.graded_rows.append({"total": round(self.student_paper.total_score, 2),
                                                "percent": round(self.student_paper.total_score / self.TOTAL, 2)})
         return self.student_paper.graded_rows
-

@@ -1,4 +1,3 @@
-import sys
 import argparse
 from Paper import Paper
 import os
@@ -40,6 +39,7 @@ def delete_answer_sheet_files(student_file):
 def print_to_file(student_result, folder_path, filename):
     with open(f"{folder_path}/results.txt", 'a+') as f:
         f.write(txt_format(student_result, filename))
+
 
 def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
     test_key = Paper(solution_file_path)

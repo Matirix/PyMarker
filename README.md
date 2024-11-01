@@ -15,3 +15,7 @@ To run you can the script, simply do:
 ### V.0.1
 After the first run I noticed that some of the columns could be confusing so I've changed a couple things.
 1. I removed the  # of correct and # of total correct answers and replaced it with just student_answer and solution_key columns.
+
+### V.0.2
+There was a feature that essentially punished students for guessing multiple answers. i.e, if 'A,B' was the correct answer and they said 'A,C', they would receive 0.25, but if they wrote
+only A, they would get .5 on that question. To even it out, I added a flag that doesn't punish guessing.
