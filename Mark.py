@@ -3,7 +3,6 @@ import Paper
 
 class Marker:
     MARKED = ["X", "x"]
-    TOTAL = 15
     PENALTY = 0.5
 
     def __init__(self, solution: Paper, student_paper: Paper):
@@ -96,5 +95,5 @@ class Marker:
                 "MaxCorrectAnswers": max_num_correct,
             })
         self.student_paper.graded_rows.append({"total": round(self.student_paper.total_score, 2),
-                                               "percent": round(self.student_paper.total_score / self.TOTAL, 2)})
+                                               "percent": round(self.student_paper.total_score / len(self.student_paper.graded_rows), 2)})
         return self.student_paper.graded_rows

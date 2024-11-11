@@ -58,8 +58,8 @@ def print_to_file(student_result, folder_path, filename):
         f.write(txt_format(student_result, filename))
 
 
-def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
-    test_key = Paper(solution_file_path)
+def mark_student_papers(solution_file_path, folder_path, delete_keyword="", table_index=0):
+    test_key = Paper(solution_file_path, table_index=table_index)
     marker = Marker.with_only_solution(test_key)
     for filename in os.listdir(folder_path):
         if delete_keyword and delete_keyword in filename:
@@ -70,7 +70,7 @@ def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
             if filename.startswith('~$'):
                 continue
             student_file = os.path.join(folder_path, filename)
-            student_test = Paper(student_file)
+            student_test = Paper(student_file, table_index=table_index)
             marker.set_student_paper(student_test)
             print(f"Marking {filename}")
             student_result = marker.compare_solution_with_student()
@@ -78,8 +78,8 @@ def mark_student_papers(solution_file_path, folder_path, delete_keyword=""):
             print_to_file(student_result, folder_path, filename)
 
 
-def mark_single_paper(solution_file_path, student_file_path):
-    marker = Marker(Paper(solution_file_path), Paper(student_file_path))
+def mark_single_paper(solution_file_path, student_file_path, table_index=0):
+    marker = Marker(Paper(solution_file_path, table_index=table_index), Paper(student_file_path, table_index=table_index))
     student_result = marker.compare_solution_with_student()
     print(txt_format(student_result, student_file_path))
 
@@ -89,10 +89,17 @@ def main():
     parser.add_argument("solution_file", help="Path to the solution file")
     parser.add_argument("student_path", help="Path containing student paper(s)")
     parser.add_argument("-s", "--single", action="store_true", help="Mark Single Student")
+    parser.add_argument("-i", "--index", help="indicates the index")
     args = parser.parse_args()
     if args.single:
         print("Marking Single Paper")
-        mark_single_paper(args.solution_file, args.student_path)
+        if args.index:
+            mark_single_paper(args.solution_file, args.student_path, table_index=args.index)
+        else:
+            mark_single_paper(args.solution_file, args.student_path)
+    elif args.index:
+        print("Marking at table index", args.index)
+        mark_student_papers(args.solution_file, args.student_path, table_index=args.index)
     else:
         mark_student_papers(args.solution_file, args.student_path)
 

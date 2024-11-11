@@ -11,8 +11,8 @@ class DOCTYPE:
 
 class Paper:
 
-    def __init__(self, file_path, grade=None, total_score=0):
-        self.table = self.load_doc_as_table(filepath=file_path)
+    def __init__(self, file_path, grade=None, total_score=0, table_index=0):
+        self.table = self.load_doc_as_table(filepath=file_path, table_index=table_index)
         self.column_labels = self.table.values[:-1][0]
         self.add_num_of_marked_as_col()
         self.grade = grade
@@ -40,7 +40,7 @@ class Paper:
     def get_cell(self, row: int, col: int):
         return self.table.iloc[row, col]
 
-    def load_doc_as_table(self, filepath: os) -> pd.DataFrame:
+    def load_doc_as_table(self, filepath: os, table_index=0) -> pd.DataFrame:
         """
         Takes the first table in a word document and turns it into an iterable array
 
@@ -50,7 +50,8 @@ class Paper:
         :return: list
         """
         doc = Document(filepath)
-        table = doc.tables[0]
+        table = doc.tables[int(table_index)]
+        print(table)
         translated_table = []
         for row in table.rows:
             translated_table.append([cell.text for cell in row.cells])
