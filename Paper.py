@@ -51,7 +51,6 @@ class Paper:
         """
         doc = Document(filepath)
         table = doc.tables[int(table_index)]
-        print(table)
         translated_table = []
         for row in table.rows:
             translated_table.append([cell.text for cell in row.cells])
