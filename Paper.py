@@ -45,8 +45,10 @@ class Paper:
         Takes the first table in a word document and turns it into an iterable array
 
         :param filepath: Word document
+        :param table_index: Which table is it
         :pre-condition: Must be a word document
         :pre-condition: Table must be the first table on the page
+
         :return: list
         """
         doc = Document(filepath)

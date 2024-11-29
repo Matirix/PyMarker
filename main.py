@@ -24,7 +24,7 @@ def txt_format(results, filename):
 
     # Adding each question's result to the report
     for item in results[:-1]:  # Exclude the last item (total)
-        question = item['Q']
+        question = item['Q'] + 1
         score = round(float(item['Score']), 2)
         incorrect = ', '.join(item['Incorrect']) if item['Incorrect'] else 'None'
         # correct = ', '.join(item['Correct']) if item['Correct'] else 'None'
@@ -58,7 +58,16 @@ def print_to_file(student_result, folder_path, filename):
         f.write(txt_format(student_result, filename))
 
 
-def mark_student_papers(solution_file_path, folder_path, delete_keyword="", table_index=0):
+def mark_student_papers(solution_file_path, folder_path, delete_keyword="", table_index=0, row_index=2):
+    """
+
+    :param row_index: Indicates which row to start, sometimes there's an initial Sample Row
+    :param solution_file_path: Filepath solution
+    :param folder_path: Folder path containing the student papers
+    :param delete_keyword: Delete keyword
+    :param table_index: Which table is it
+    :return:
+    """
     test_key = Paper(solution_file_path, table_index=table_index)
     marker = Marker.with_only_solution(test_key)
     for filename in os.listdir(folder_path):
@@ -73,7 +82,7 @@ def mark_student_papers(solution_file_path, folder_path, delete_keyword="", tabl
             student_test = Paper(student_file, table_index=table_index)
             marker.set_student_paper(student_test)
             print(f"Marking {filename}")
-            student_result = marker.compare_solution_with_student()
+            student_result = marker.compare_solution_with_student(begin_from_row=row_index)
             print(f"Successfully Marked{filename} w/ {student_result[-1]}")
             print_to_file(student_result, folder_path, filename)
 
@@ -89,7 +98,8 @@ def main():
     parser.add_argument("solution_file", help="Path to the solution file")
     parser.add_argument("student_path", help="Path containing student paper(s)")
     parser.add_argument("-s", "--single", action="store_true", help="Mark Single Student")
-    parser.add_argument("-i", "--index", help="indicates the index")
+    parser.add_argument("-i", "--index", help="indicates the table index")
+    parser.add_argument("-r", "--row_index", help="Indicates the row it starts on")
     args = parser.parse_args()
     if args.single:
         print("Marking Single Paper")
@@ -100,6 +110,9 @@ def main():
     elif args.index:
         print("Marking at table index", args.index)
         mark_student_papers(args.solution_file, args.student_path, table_index=args.index)
+    elif args.row_index:
+        print("Marking at row", args.row_index)
+        mark_student_papers(args.solution_file, args.student_path, args.row_index)
     else:
         mark_student_papers(args.solution_file, args.student_path)
 
